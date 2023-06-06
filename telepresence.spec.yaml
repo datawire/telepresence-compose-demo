@@ -1,0 +1,27 @@
+---
+workloads:
+  - name: userapi
+    intercepts:
+      - handler: userapi
+        port: 80
+        localPort: 8080
+        headers:
+          - name: "test-{{ .Telepresence.Username }}"
+            value: "1"
+handlers:
+  - name: userapi
+    environment:
+      - name: DATASET
+        value: local
+    docker:
+      ports:
+        - 8080
+      compose:
+        context: "."
+        services:
+          - name: userapi
+            behavior: interceptHandler
+
+          - name: postgres
+            behavior: local
+...
