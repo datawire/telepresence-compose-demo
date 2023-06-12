@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: contactapi
+  name: contactapi
+  namespace: telepresence-compose-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contactapi
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: contactapi
+    spec:
+      containers:
+      - image: knlambert/telepresence-compose-demo-contactapi:0.1.5
+        name: telepresence-compose-demo-contactapi
+        resources: {}
+        env:
+          - name: DATASET
+            value: staging
+          - name: DB_HOST
+            value: postgres
+          - name: DB_USERNAME
+            value: postgres
+          - name: DB_PASSWORD
+            value: postgresql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: contactapi
+  name: contactapi
+  namespace: telepresence-compose-demo
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: contactapi
