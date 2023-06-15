@@ -20,33 +20,17 @@ spec:
       - image: knlambert/telepresence-compose-demo-userapi:0.1.3
         name: telepresence-compose-demo-userapi
         resources: {}
-        volumeMounts:
-          - name: database-password
-            mountPath: "/var/secrets/"
-            readOnly: true
         env:
           - name: DATASET
             value: staging
           - name: DB_HOST
-            value: postgres
+            value: postgres.telepresence-compose-demo.svc.cluster.local
           - name: DB_USERNAME
             value: postgres
           - name: DB_PASSWORD
             value: postgresql
           - name: CONTACT_API_URL
             value: http://contactapi.telepresence-compose-demo.svc.cluster.local
-      volumes:
-        - name: database-password
-          secret:
-            secretName: database-password
----
-apiVersion: v1
-kind: Secret
-data:
-  database_password.txt: aGVsbG8tcGFzc3dvcmQK
-metadata:
-  creationTimestamp: null
-  name: database-password
 ---
 apiVersion: v1
 kind: Service

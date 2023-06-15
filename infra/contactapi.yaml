@@ -24,7 +24,7 @@ spec:
           - name: DATASET
             value: staging
           - name: DB_HOST
-            value: postgres
+            value: postgres.telepresence-compose-demo.svc.cluster.local
           - name: DB_USERNAME
             value: postgres
           - name: DB_PASSWORD

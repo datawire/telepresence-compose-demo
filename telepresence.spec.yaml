@@ -2,17 +2,37 @@
 workloads:
   - name: userapi
     intercepts:
-      - handler: userapi
+      - handler: full_remote # full_remote|full_local
         port: 80
         localPort: 8080
         headers:
           - name: "test-{{ .Telepresence.Username }}"
             value: "1"
 handlers:
-  - name: userapi
-    environment:
-      - name: DATASET
-        value: remote
+# Uncomment the use case to use.
+#  - name: full_local
+#    environment:
+#      - name: DB_HOST
+#        value: postgres
+#      - name: DATASET
+#        value: local
+#      - name: CONTACT_API_URL
+#        value: http://contactapi:8081
+#    docker:
+#      ports:
+#        - 8080
+#      compose:
+#        context: "."
+#        services:
+#          - name: userapi
+#            behavior: interceptHandler
+#
+#          - name: contactapi
+#            behavior: local
+#
+#          - name: postgres
+#            behavior: local
+  - name: full_remote
     docker:
       ports:
         - 8080
