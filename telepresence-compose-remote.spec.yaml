@@ -10,11 +10,17 @@ workloads:
         port: 80 # The corresponding Kubernetes service uses the port 80.
         localPort: 8080 # The local container uses port 8080.
 handlers:
-  - name: userapi
-    docker:
-      build: 
-        context: ./
-        args: # Build the docker image on the fly.
-          - --file
-          - ./docker/userapi/Dockerfile
+ - name: userapi
+   docker:
+     ports:
+       - 8080
+     compose:
+       services:
+         - name: userapi
+           behavior: interceptHandler
 
+         - name: contactapi
+           behavior: remote
+
+         - name: postgres
+           behavior: remote

@@ -4,7 +4,6 @@ metadata:
   labels:
     app: contactapi
   name: contactapi
-  namespace: telepresence-compose-demo
 spec:
   replicas: 1
   selector:
@@ -20,6 +19,10 @@ spec:
       - image: knlambert/telepresence-compose-demo-contactapi:0.1.5
         name: telepresence-compose-demo-contactapi
         resources: {}
+        ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
         env:
           - name: DATASET
             value: staging
@@ -36,11 +39,10 @@ metadata:
   labels:
     app: contactapi
   name: contactapi
-  namespace: telepresence-compose-demo
 spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 8080
+    targetPort: http
   selector:
     app: contactapi

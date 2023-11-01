@@ -4,7 +4,6 @@ metadata:
   labels:
     app: userapi
   name: userapi
-  namespace: telepresence-compose-demo
 spec:
   replicas: 1
   selector:
@@ -20,6 +19,10 @@ spec:
       - image: knlambert/telepresence-compose-demo-userapi:0.1.3
         name: telepresence-compose-demo-userapi
         resources: {}
+        ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
         env:
           - name: DATASET
             value: staging
@@ -38,12 +41,11 @@ metadata:
   labels:
     app: userapi
   name: userapi
-  namespace: telepresence-compose-demo
 spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 8080
+    targetPort: http
   selector:
     app: userapi
   type: LoadBalancer
