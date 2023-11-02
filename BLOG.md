@@ -1,6 +1,6 @@
 # Telepresence with Docker Compose
 
-When it comes to developing an application, one of the potential friction points is the developer's machine. Several issues may arise:
+When it comes to developing an application, one of the potential friction points is your local setup. Several issues may arise:
 
 - Tight security policies may be in place.
 - The machine's operating system may differ significantly from the server's.
@@ -8,18 +8,18 @@ When it comes to developing an application, one of the potential friction points
 
 To address this challenge, platform engineers or developers themselves often resort to using a common solution that allows anyone to quickly start working on a project.
 
-One commonly seen tool for this purpose is Docker, and more specifically, Docker Compose.
+One common solution for this problem, is Docker, and more specifically, Docker Compose.
 
-Both Compose and Telepresence assist developers in working on their applications, although they serve different purposes:
+Both Docker Compose and Telepresence assist developers in working on their applications, although they serve different purposes:
 
-- Compose provides a highly customizable way of running an entire application locally.
-- Telepresence enables running a local environment within a remote cluster.
+- Docker Compose provides a highly customizable way of running an entire application locally.
+- Telepresence enables combining a local environment within a remote cluster.
 
-Let's explore how to harmonize and combine these two approaches.
+Let's explore how to harmonize these two approaches.
 
 ## A simple example
 
-Let's start with a simple example of infrastructure, and consider the following application :
+Let's start with a simple example and consider the following application :
 
 - A user-api micro service,
 - A contact-api micro service,
@@ -76,7 +76,7 @@ services:
       - 5432:5432
 ```
 
-You can run it locally with compose by running:
+You can start your services locally with compose by running:
 
 ```cli
 git clone https://github.com/datawire/telepresence-compose-demo
@@ -84,7 +84,7 @@ cd telepresence-compose-demo
 docker compose up
 ```
 
-And you should be able to see your service locally :
+You can test your service with:
 
 ```cli
 curl localhost:8080/users
@@ -96,9 +96,9 @@ Press `Ctrl + C` to shutdown the Compose run.
 
 ## Going Kubernetes
 
-Now let's say that you have an equivalent Kubernetes infrastructure.
+Now, lets assume you have the equivalent services running within Kubernetes.
 
-You can find its definition in the repository used above, and create it with:
+You can find the configuration in the [repository](https://github.com/datawire/telepresence-compose-demo/tree/knlambert/blog-post/infra), and create it with:
 
 ```cli
 # Create a namespace (feel free to change its name)
@@ -106,7 +106,7 @@ kubectl create namespace telepresence-compose-demo
 kubectl apply -f infra -n telepresence-compose-demo
 ```
 
-And this is what we get:
+And this is what the resulting infrastructure:
 
 ```cli
 > kubectl get svc -n telepresence-compose-demo
@@ -138,13 +138,13 @@ This is where Telepresence can be extremely beneficial for your setup, particula
 
 ### Basic knowledge
 
-Telepresence supports a file format that it is possible to use to persist any type of configuration: The Intercept Specification.
+Telepresence supports a YAML document that allows you to create a consistent and repeatable environment: The Intercept Specification.
 
 It has three sections :
 
-- `connection`: This one is optional, but it allows you to define which context the spec should be used with.
+- `connection`: This one is optional, but it allows you to define which Kubernetes context the spec should be used with.
 - `workloads`: It defines the workloads to intercept, and how (header, ports, ...).
-- `handlers`: That's who you'll handle the traffic from these intercepts.
+- `handlers`: The local service that will handle the intercepted traffic from the workload.
 
 Consider this specification file:
 
@@ -174,7 +174,7 @@ able to communicate with the cluster as if it was actually located there.
 
 We indicate that the `userapi` workload needs to be intercepted. It means that any request going to this service
 will be redirected to your local container (we call that a global intercept, but you could also do it for a subset of the
-traffic using a personal intercepts).
+traffic [using a personal intercepts](https://www.getambassador.io/docs/telepresence/latest/howtos/personal-intercepts#personal-intercepts)).
 
 Then we define the handler that will receive the traffic. In this case, we use `userapi`'s Dockerfile.
 
@@ -195,7 +195,7 @@ PostgreSQL is ready!
 2023/11/01 20:11:24 Listening on 8080
 ```
 
-If you hit the real endpoint, you will see the traffic in the logs. You can get access it
+If you hit the real endpoint, you will see the traffic in the logs above. You can get access to it
 through its external IP:
 
 ```cli
@@ -204,7 +204,7 @@ NAME      TYPE        CLUSTER-IP    EXTERNAL-IP    PORT(S)   AGE
 userapi   ClusterIP   10.43.25.37   x.x.x.x        80/TCP    56m
 ```
 
-If you don't have any load balancer to expose your service, you can still try to
+If you don't have any load balancer to expose your service, you can still
 port-forward the service :
 
 ```cli
