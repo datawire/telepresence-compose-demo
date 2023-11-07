@@ -1,0 +1,36 @@
+services:
+  contactapi:
+    build:
+      context: .
+      dockerfile: docker/contactapi/Dockerfile
+    environment:
+      DATASET: local
+      DB_HOST: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgresql
+      PORT: 8081
+    depends_on:
+      - userapi
+    ports:
+      - 8081:8081
+  userapi:
+    build:
+      context: .
+      dockerfile: docker/userapi/Dockerfile
+    environment:
+      DATASET: local
+      DB_HOST: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgresql
+      CONTACT_API_URL: "http://contactapi:8081"
+      PORT: 8080
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres:15-bullseye
+    environment:
+      POSTGRES_PASSWORD: postgresql
+    ports:
+      - 5432:5432

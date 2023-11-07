@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: userapi
+  name: userapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userapi
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: userapi
+    spec:
+      containers:
+      - image: knlambert/telepresence-compose-demo-userapi:0.1.3
+        name: telepresence-compose-demo-userapi
+        resources: {}
+        ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+        env:
+          - name: DATASET
+            value: staging
+          - name: DB_HOST
+            value: postgres.telepresence-compose-demo.svc.cluster.local
+          - name: DB_USERNAME
+            value: postgres
+          - name: DB_PASSWORD
+            value: postgresql
+          - name: CONTACT_API_URL
+            value: http://contactapi.telepresence-compose-demo.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: userapi
+  name: userapi
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: userapi
+  type: LoadBalancer

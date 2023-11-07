@@ -1,0 +1,33 @@
+connection:
+  namespace: telepresence-compose-demo # Consider your local setup moved to this namespace.
+workloads:
+  - name: userapi
+    intercepts:
+      - handler: userapi # Matches the handler's name.
+        global: true
+        previewURL:
+          enable: false
+        port: 80 # The corresponding Kubernetes service uses the port 80.
+        localPort: 8080 # The local container uses port 8080.
+handlers:
+  - name: userapi
+    environment: # Override the env vars to use the local values.
+      - name: DB_HOST
+        value: postgres
+      - name: DATASET
+        value: local
+      - name: CONTACT_API_URL
+        value: http://contactapi:8081
+    docker:
+      ports:
+        - 8080
+      compose:
+        services:
+          - name: userapi
+            behavior: interceptHandler
+
+          - name: contactapi
+            behavior: local
+
+          - name: postgres
+            behavior: local
